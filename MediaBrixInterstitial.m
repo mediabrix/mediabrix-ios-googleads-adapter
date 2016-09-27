@@ -14,15 +14,47 @@
 @property(nonatomic) NSString* ZONE;
 @end
 
-@implementation MediaBrixInterstitial 
+@implementation MediaBrixInterstitial
 @synthesize delegate;
 - (void)requestInterstitialAdWithParameter:(NSString *)serverParameter
                                      label:(NSString *)serverLabel
                                    request:(GADCustomEventRequest *)request {
+    
     _APP_ID = @"";
     _ZONE = @"";
-    id callbackDelegate = self;
-    [MediaBrix initMediaBrixAdHandler:callbackDelegate withBaseURL:@"http://mobile.mediabrix.com/v2/manifest" withAppID:_APP_ID]; // Replace APP_ID with the app id provided to you by MediaBrix
+    
+    if(serverParameter){
+        NSError *jsonError;
+        NSData *objectData = [serverParameter dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *adMobParams = [NSJSONSerialization JSONObjectWithData:objectData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&jsonError];
+        
+        if(adMobParams){
+            id callbackDelegate = self;
+            
+            if([adMobParams objectForKey:@"appID"])
+                _APP_ID = adMobParams[@"appID"];
+            else
+                  NSLog(@"Please ensure that you have added appID in the parameters feild in the format that MediaBrix has provided");
+            
+            if([adMobParams objectForKey:@"zone"])
+                _ZONE = adMobParams[@"zone"];
+            else
+                  NSLog(@"Please ensure that you have added zone in the parameters feild in the format that MediaBrix has provided");
+            
+            
+            if([_ZONE length] > 0 && [_APP_ID length] > 0)
+                [MediaBrix initMediaBrixDelegate:callbackDelegate withBaseURL:@"http://mobile.mediabrix.com/v2/manifest" withAppID:_APP_ID];
+            else
+                NSLog(@"Please add the parameters in the format that MediaBrix has provided into AdMob.");
+            
+        }else{
+            NSLog(@"Please add the parameters in the format that MediaBrix has provided into AdMob.");
+        }
+    }else{
+        NSLog(@"Please add the parameters in the format that MediaBrix has provided into AdMob.");
+    }
 }
 
 - (void)presentFromRootViewController:(UIViewController *)rootViewController {
@@ -30,39 +62,52 @@
     [[MediaBrix sharedInstance]showAdWithIdentifier:_ZONE fromViewController:nil reloadWhenFinish:NO];
 }
 
-- (void)mediaBrixAdHandler:(NSNotification *)notification { // implementing this function for notifications is required
-    NSString * adIdentifier =[notification.userInfo objectForKey:kMediabrixTargetAdTypeKey]; //adIndentifier refers to zone that you are attempting to load/show
-    if ([kMediaBrixStarted isEqualToString:notification.name]) {
-        [[MediaBrix sharedInstance]loadAdWithIdentifier:_ZONE adData:_publisherVars withViewController:nil];
-    }else if([kMediaBrixAdWillLoadNotification isEqualToString:notification.name]){
-        // Invoked when the ad has been requested
-    }
-    else if([kMediaBrixAdFailedNotification isEqualToString:notification.name]){
-        // Invoked when the ad fails to load an ad
-        NSError *error = [NSError errorWithDomain:@"No_Ad_Returned"
-                                             code:200
-                                         userInfo:nil];
-        [self.delegate customEventInterstitial:self didFailAd:error];
-    }
-    else if([kMediaBrixAdReadyNotification isEqualToString:notification.name]){
-        // Invoked when ad has succesfully downloaded and is ready to show
-        [self.delegate customEventInterstitialDidReceiveAd:self];
-    }
-    else if([kMediaBrixAdShowNotification isEqualToString:notification.name]){
-        // Invoked when ad is being shown to the user
-    }
-    else if([kMediaBrixAdDidCloseNotification isEqualToString:notification.name]){
-        // Invoked when the ad is closed
-        [self.delegate customEventInterstitialDidDismiss:self];
-    }
-    else if([ kMediaBrixAdRewardNotification isEqualToString:notification.name]){
-        // Invoked when the user has watched an ad that offers an incentive and reward should be given
-    }
-    else if([ kMediaBrixAdClickedNotification isEqualToString:notification.name]){
-        // Invoked when the user has clicked the ad
-        [self.delegate customEventInterstitialWasClicked:self];
-        [self.delegate customEventInterstitialWillLeaveApplication:self];
-    }
+#pragma mark - <MediaBrixDelegate>
+- (void)mediaBrixStarted {
+    [[MediaBrix sharedInstance]loadAdWithIdentifier:_ZONE adData:_publisherVars withViewController:nil];
 }
+
+- (void)mediaBrixAdWillLoad:(NSString *)identifier {
+    
+}
+
+- (void)mediaBrixAdFailed:(NSString *)identifier {
+    NSError *error = [NSError errorWithDomain:@"No_Ad_Returned"
+                                         code:200
+                                     userInfo:nil];
+    
+    [self.delegate customEventInterstitial:self didFailAd:error];
+    // Invoked when the ad fails to load an ad
+}
+
+- (void)mediaBrixAdReady:(NSString *)identifier {
+    [self.delegate customEventInterstitialDidReceiveAd:self];
+    // Invoked when ad has succesfully downloaded and is ready to show
+}
+
+- (void)mediaBrixAdShow:(NSString *)identifier {
+    // Invoked when ad is being shown to the user
+}
+
+- (void)mediaBrixAdDidClose:(NSString *)identifier {
+    [self.delegate customEventInterstitialDidDismiss:self];    // Invoked when the ad is closed
+}
+
+- (void)mediaBrixAdReward:(NSString *)identifier {
+    
+    // Invoked when the user has watched an ad that offers an incentive and reward should be given
+}
+
+- (void)mediaBrixAdClicked:(NSString *)identifier {
+    [self.delegate customEventInterstitialWasClicked:self];
+    [self.delegate customEventInterstitialWillLeaveApplication:self];
+    // Invoked when the user has clicked the ad
+}
+
+
+-(void)handleCustomEventInvalidated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 
 @end
