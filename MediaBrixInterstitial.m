@@ -44,9 +44,10 @@
                   NSLog(@"Please ensure that you have added zone in the parameters feild in the format that MediaBrix has provided");
             
             
-            if([_ZONE length] > 0 && [_APP_ID length] > 0)
+            if([_ZONE length] > 0 && [_APP_ID length] > 0){
+                [MediaBrix MBEnableVerboseLogging:YES];
                 [MediaBrix initMediaBrixDelegate:callbackDelegate withBaseURL:@"http://mobile.mediabrix.com/v2/manifest" withAppID:_APP_ID];
-            else
+            }else
                 NSLog(@"Please add the parameters in the format that MediaBrix has provided into AdMob.");
             
         }else{
