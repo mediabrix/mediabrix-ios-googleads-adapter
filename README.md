@@ -21,3 +21,7 @@ When creating the custom event network for [Google DFP](https://developers.googl
 **Step 2** In "Link Binary with Libraries" press the "+" button to add libxml2.tbd
 
 **Step 3:** Download **MediaBrixInterstitial.h** and **MediaBrixInterstitial.m** from [here](https://github.com/mediabrix/mediabrix-ios-googleads-adapter)
+
+##Logging 
+To disable logging from the MediaBrix SDK, set ```MBEnableVerboseLogging``` to ```NO``` in "MediaBrixInterstitial.m" 
+
