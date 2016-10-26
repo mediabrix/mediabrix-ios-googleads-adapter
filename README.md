@@ -1,4 +1,5 @@
 # MediaBrix Google DFP/AdMob Adapters - iOS
+## Please see "Testing / Release Settings" section for new guidelines on testing and deploying your integration.
 
 MediaBrix has created a Google DFP/AdMob adapter that allows publishers, using Google DFP/AdMob as their central ad server, to mediate the MediaBrix network as another demand source.
 
@@ -23,5 +24,21 @@ When creating the custom event network for [Google DFP](https://developers.googl
 **Step 3:** Download **MediaBrixInterstitial.h** and **MediaBrixInterstitial.m** from [here](https://github.com/mediabrix/mediabrix-ios-googleads-adapter)
 
 ##Logging 
-To disable logging from the MediaBrix SDK, set ```MBEnableVerboseLogging``` to ```NO``` in "MediaBrixInterstitial.m" 
+To disable logging from the MediaBrix SDK, set ```MBEnableVerboseLogging``` to ```NO``` in "MediaBrixInterstitial.m"
+
+##Testing / Release Settings
+
+To facilitate integrations and QA around the globe, MediaBrix has deployed an open Base URL for all of our world wide network partners to use while testing the MediaBrix SDK. This Test Base URL will eliminate the need for proxying your device to the US and ensure your app receives 100% fill during testing.
+
+* **Test Base URL:** `https://test-mobile.mediabrix.com/v2/manifest/`
+
+* **Production Base URL:** `https://mobile.mediabrix.com/v2/manifest/`
+
+`https://test-mobile.mediabrix.com/v2/manifest/` should **ONLY** be used for testing purposes, as it will not deliver live campaigns to your app.
+
+You can edit the Base URL for testing in "MediaBrixInterstitial.m":
+
+```[MediaBrix initMediaBrixDelegate:callbackDelegate withBaseURL:@"BASE_URL" withAppID:_APP_ID];```
+
+It is important to ensure that after testing, the Release build of your app uses the Production Base URL. **If you release your app using the Test Base URL, your app will not receive payable MediaBrix ads.**
 
