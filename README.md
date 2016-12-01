@@ -11,7 +11,7 @@ MediaBrix has created a Google DFP/AdMob adapter that allows publishers, using G
 
 ##Edit Custom Event
 ###Class Name
-Enter the following for "Class Name", **MediaBrixInterstitial** when editing the the custom event.
+Enter the following for "Class Name", `MediaBrixInterstitial` when editing the the custom event.
 
 ###Mediation Parameters
 When creating the custom event network for [Google DFP](https://developers.google.com/mobile-ads-sdk/docs/dfp/android/custom-events)/[AdMob Mediation Setup](https://support.google.com/admob/answer/3083407?hl=en&ref_topic=3063091) you will need to add the following to the "Parameter" feild in this format: 
