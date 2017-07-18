@@ -65,7 +65,7 @@
 
 #pragma mark - <MediaBrixDelegate>
 - (void)mediaBrixStarted {
-    [[MediaBrix sharedInstance]loadAdWithIdentifier:_ZONE adData:_publisherVars withViewController:nil];
+    [[MediaBrix sharedInstance]loadAdWithIdentifier:_ZONE withViewController:nil];
 }
 
 - (void)mediaBrixAdWillLoad:(NSString *)identifier {

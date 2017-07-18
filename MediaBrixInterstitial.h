@@ -11,7 +11,4 @@
 @import GoogleMobileAds;
 
 @interface MediaBrixInterstitial : NSObject<GADCustomEventInterstitial>
-
-@property(strong,nonatomic) NSMutableDictionary * publisherVars;
-
 @end
